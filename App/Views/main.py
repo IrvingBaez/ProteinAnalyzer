@@ -8,12 +8,36 @@ def display_error(message="Algo salió mal"):
     messagebox.showerror("Information", message)
 
 
+def set_scrollbars(tree_view, vertical=True, horizontal=False):
+    if vertical:
+        treescrolly = Scrollbar(tree_view, orient=VERTICAL, command=tree_view.yview)
+        treescrolly.pack(side=RIGHT, fill=Y)
+        tree_view.configure(yscrollcommand=treescrolly.set)
+    if horizontal:
+        treescrollx = Scrollbar(tree_view, orient=HORIZONTAL, command=tree_view.xview)
+        treescrollx.pack(side=BOTTOM, fill=X)
+        tree_view.configure(xscrollcommand=treescrollx.set)
+
+
+def dataframe_to_treeview(dataframe, treeview):
+    treeview["column"] = list(dataframe.columns)
+    treeview["show"] = "headings"
+
+    for column in treeview["columns"]:
+        treeview.heading(column, text=column)  # let the column heading = column name
+
+    rows = dataframe.to_numpy().tolist()  # turns the dataframe into a list of lists
+    for row in rows:
+        treeview.insert("", "end", values=row)  # inserts each list into the treeview.
+
+
 class MainView:
     def __init__(self):
         pub.subscribe(display_error, "Error")
         self.main_controller = MainController()
         self.root = Tk()
 
+        self.tabControl = ttk.Notebook(self.root)
         self.set_up_window()
         self.set_up_menu()
 
@@ -46,31 +70,28 @@ class MainView:
         ))
         self.main_controller.load_data(file_path)
 
-        data_frame = LabelFrame(self.root, text="Datos")
-        data_frame.place(relheight=0.95, relwidth=0.9)
-        tree_view = ttk.Treeview(data_frame)
+        frame = LabelFrame(self.root, text="Datos")
+        frame.place(relheight=0.95, relwidth=0.9)
+
+        tree_view = ttk.Treeview(frame)
         tree_view.place(relheight=1, relwidth=1)
 
-        treescrolly = Scrollbar(data_frame, orient="vertical", command=tree_view.yview)
-        treescrollx = Scrollbar(data_frame, orient="horizontal", command=tree_view.xview)
-        tree_view.configure(xscrollcommand=treescrollx.set, yscrollcommand=treescrolly.set)
-        treescrollx.pack(side="bottom", fill="x")  # make the scrollbar fill the x axis of the Treeview widget
-        treescrolly.pack(side="right", fill="y")  # make the scrollbar fill the y axis of the Treeview widget
-
-        tree_view["column"] = list(self.main_controller.data.columns)
-        tree_view["show"] = "headings"
-
-        for column in tree_view["columns"]:
-            tree_view.heading(column, text=column)  # let the column heading = column name
-
-        rows = self.main_controller.data.to_numpy().tolist()  # turns the dataframe into a list of lists
-        for row in rows:
-            tree_view.insert("", "end", values=row)  # inserts each list into the treeview.
-
-        # TODO: Show data as table
+        set_scrollbars(tree_view)
+        dataframe_to_treeview(self.main_controller.data, tree_view)
 
     def weighted_scores_command(self):
-        pass
+        popup = Toplevel()
+        popup.geometry("500x500+0+0")
+        popup.grab_set()
+
+        frame = LabelFrame(popup, text="Datos")
+        frame.place(relheight=0.95, relwidth=0.9)
+
+        tree_view = ttk.Treeview(frame)
+        tree_view.place(relheight=1, relwidth=1)
+
+        set_scrollbars(tree_view)
+        dataframe_to_treeview(self.main_controller.weighted_scores(), tree_view)
 
 
 if __name__ == '__main__':
