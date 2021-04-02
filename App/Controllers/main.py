@@ -1,12 +1,14 @@
 import pandas as pd
 from pubsub import pub
 
-from App.Models import WeightedScoreAnalysis as wsa
+from App.Controllers.WeightedScoreAnalysis import WeightedScoreAnalysis
+from App.Views.Main import MainView
 
 
 class MainController:
     def __init__(self):
         self.data = None
+        self.view = MainView(self)
 
     def load_data(self, path):
         try:
@@ -16,8 +18,9 @@ class MainController:
         except FileNotFoundError:
             pub.sendMessage("Error", message="Archivo no encontrado")
 
-    def weighted_scores(self):
-        analysis = wsa.WeightedScoreAnalysis()
-        result = analysis.weight_score_per_family(self.data[["ID", "HMMER"]])
-         # analysis.cross_matrix()
-        return result
+    def weighted_scores(self, id_col="ID", hmmer_col=""):
+        WeightedScoreAnalysis(self.data[[id_col, hmmer_col]])
+
+
+if __name__ == '__main__':
+    MainController()
