@@ -29,17 +29,33 @@ class WeightedScoreAnalysis:
         :return: pandas dataframe with domain and weighted score as columns.
         """
         self.__load_proteins(data)
-        scores = {family: self.__weighted_score(family) for family in self.__find_families()}
-        self.result = pd.DataFrame(scores.items(), columns=['Dominio', 'Puntuación']).sort_values('Dominio')
+
+        data = {'Dominio': [], 'Puntuación': [], 'Vecinos': []}
+        for family in self.__find_families():
+            data['Dominio'] += [family]
+            data['Puntuación'] += [self.__weighted_score(family)]
+
+            neighbours = self.neighbours.get(family)
+            if neighbours is not None:
+                data['Vecinos'] += [', '.join([f'{key} ({value})' for key, value in neighbours.items()])]
+            else:
+                data['Vecinos'] += ['']
+
+        self.result = pd.DataFrame(data, columns=['Dominio', 'Puntuación', 'Vecinos']).sort_values('Dominio')
+
         return self.result
 
     def cross_matrix(self):
-        domains = list(self.neighbours.keys())
+        neighbours_count = [[key, len(val)] for key, val in self.neighbours.items()]
+        neighbours_count.sort(key=lambda x: x[1], reverse=True)
+
+        domains = list(map(lambda x: x[0], neighbours_count[0:10]))
         matrix = numpy.zeros((len(domains), len(domains)))
 
-        for domain in self.neighbours.keys():
+        for domain in domains:
             for neighbour in self.neighbours[domain]:
-                matrix[domains.index(domain)][domains.index(neighbour)] += 1
+                if neighbour in domains:
+                    matrix[domains.index(domain)][domains.index(neighbour)] += 1
 
         fig, ax = plt.subplots()
         im = ax.imshow(matrix)
@@ -59,6 +75,12 @@ class WeightedScoreAnalysis:
 
         ax.set_title("Heatmap")
         fig.tight_layout()
+        plt.show()
+
+    def score_graph(self):
+        scores = self.result['Puntuación'].tolist()
+        scores = [score for score in scores if str(score) != 'nan']
+        plt.boxplot(scores)
         plt.show()
 
     def __load_proteins(self, data):
