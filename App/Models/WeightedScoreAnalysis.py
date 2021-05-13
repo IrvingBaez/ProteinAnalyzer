@@ -37,7 +37,7 @@ class WeightedScoreAnalysis:
 
             neighbours = self.neighbours.get(family)
             if neighbours is not None:
-                data['Vecinos'] += [', '.join(neighbours.keys())]
+                data['Vecinos'] += [', '.join([f'{key} ({value})' for key, value in neighbours.items()])]
             else:
                 data['Vecinos'] += ['']
 
@@ -75,6 +75,12 @@ class WeightedScoreAnalysis:
 
         ax.set_title("Heatmap")
         fig.tight_layout()
+        plt.show()
+
+    def score_graph(self):
+        scores = self.result['Puntuación'].tolist()
+        scores = [score for score in scores if str(score) != 'nan']
+        plt.boxplot(scores)
         plt.show()
 
     def __load_proteins(self, data):
