@@ -11,7 +11,7 @@ class WeightedScoreAnalysis:
         popup.geometry("500x500+0+0")
         popup.grab_set()
 
-        # Contenedor de treeview
+        # TreeView container
         frame = LabelFrame(popup, text="Datos")
         frame.pack(side=LEFT, fill=BOTH, expand=True)
 
@@ -21,12 +21,12 @@ class WeightedScoreAnalysis:
         set_scrollbars(self.tree_view)
         dataframe_to_treeview(self.controller.result, self.tree_view)
 
-        # Contenedor de botones
+        # Buttons container
         button_container = LabelFrame(popup, text="Opciones")
         button_container.pack(side=RIGHT, fill=Y)
         
         self.sort_button = ttk.Button(button_container, text="Ordenar por Valor", command=self.sort_by_value)
-        self.sort_button.pack()
+        self.sort_button.pack(fill=X)
 
         save_button = ttk.Button(button_container, text="Exportar csv", command=self.controller.save_as_csv)
         save_button.pack(fill=X)

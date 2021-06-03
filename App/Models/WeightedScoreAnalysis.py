@@ -16,19 +16,22 @@ def coefficient_variation(data):
 
 
 class WeightedScoreAnalysis:
-    def __init__(self):
+    def __init__(self, data, id_col, sequence_col, separator):
+        self.data = data[[id_col, sequence_col]]
+        self.id_col = id_col
+        self.sequence_col = sequence_col
+        self.separator = separator
         self.total_proteins = None
         self.neighbours = {}
         self.result = None
 
-    def weight_score_per_family(self, data):
+    def weight_score_per_family(self):
         """
         Finds the weighted score for every family available in the data provided.
 
-        :param data: pandas dataframe, table of proteins and their families.
         :return: pandas dataframe with domain and weighted score as columns.
         """
-        self.__load_proteins(data)
+        self.__load_proteins(self.data)
 
         data = {'Dominio': [], 'Puntuación': [], 'Vecinos': []}
         for family in self.__find_families():
@@ -45,39 +48,12 @@ class WeightedScoreAnalysis:
 
         return self.result
 
-    def cross_matrix(self):
-        neighbours_count = [[key, len(val)] for key, val in self.neighbours.items()]
-        neighbours_count.sort(key=lambda x: x[1], reverse=True)
-
-        domains = list(map(lambda x: x[0], neighbours_count[0:10]))
-        matrix = numpy.zeros((len(domains), len(domains)))
-
-        for domain in domains:
-            for neighbour in self.neighbours[domain]:
-                if neighbour in domains:
-                    matrix[domains.index(domain)][domains.index(neighbour)] += 1
-
-        fig, ax = plt.subplots()
-        im = ax.imshow(matrix)
-
-        # We want to show all ticks...
-        ax.set_xticks(numpy.arange(len(domains)))
-        ax.set_yticks(numpy.arange(len(domains)))
-        # ... and label them with the respective list entries
-        ax.set_xticklabels(domains)
-        ax.set_yticklabels(domains)
-
-        plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-
-        for i in range(len(domains)):
-            for j in range(len(domains)):
-                text = ax.text(j, i, matrix[i, j], ha="center", va="center", color="w")
-
-        ax.set_title("Heatmap")
-        fig.tight_layout()
-        plt.show()
-
     def score_graph(self):
+        """
+        Plots the distribution of scores in a boxplot
+
+        :return: None
+        """
         scores = self.result['Puntuación'].tolist()
         scores = [score for score in scores if str(score) != 'nan']
         plt.boxplot(scores)
@@ -91,9 +67,9 @@ class WeightedScoreAnalysis:
         :param data: pandas dataframe, table of proteins and their families.
         :return: None.
         """
-        data['HMMER'] = data.HMMER.str.replace(r'\([^()]*\)', '', regex=True)
-        self.total_proteins = {key: [domain for domain in value.split('+')]
-                               for key, value in data.set_index('ID').T.to_dict('records')[0].items()}
+        data[self.sequence_col] = data[self.sequence_col].str.replace(r'\([^()]*\)', '', regex=True)
+        self.total_proteins = {key: [domain for domain in value.split(self.separator)]
+                               for key, value in data.set_index(self.id_col).T.to_dict('records')[0].items()}
 
     def __weighted_score(self, domain):
         """

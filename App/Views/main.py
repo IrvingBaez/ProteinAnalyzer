@@ -54,5 +54,4 @@ class MainView:
         dataframe_to_treeview(self.controller.data, tree_view)
 
     def weighted_scores_command(self):
-        # TODO: Se debe poder elegir el nombre de las columnas a analizar
-        self.controller.weighted_scores("ID", "HMMER")
+        self.controller.weighted_scores()

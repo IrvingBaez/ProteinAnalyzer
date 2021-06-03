@@ -1,8 +1,8 @@
 import pandas as pd
 from pubsub import pub
 
-from App.Controllers.WeightedScoreAnalysis import WeightedScoreAnalysis
-from App.Views.Main import MainView
+from App.Controllers.WeightedScoreAnalysisConfig import WeightedScoreAnalysisConfig
+from App.Views.main import MainView
 
 
 class MainController:
@@ -18,8 +18,8 @@ class MainController:
         except FileNotFoundError:
             pub.sendMessage("Error", message="Archivo no encontrado")
 
-    def weighted_scores(self, id_col="ID", hmmer_col=""):
-        WeightedScoreAnalysis(self.data[[id_col, hmmer_col]])
+    def weighted_scores(self):
+        WeightedScoreAnalysisConfig(self.data)
 
 
 if __name__ == '__main__':
