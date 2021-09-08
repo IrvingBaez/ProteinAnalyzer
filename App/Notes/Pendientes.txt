@@ -1,0 +1,24 @@
+
+- Recuperación de funcionalidad:
+    * Permitir análisis de múltiples tipos.
+- Matriz de interacción:
+    * Ordenar por score en vez de número de vecinos.
+    * Agregar notación de color y quitar los números.
+    * Cambiar escala de visualización, usar escala logarítmica.
+- Graficar coeficiente de variación.
+- Comparar score de dominios con colores.
+- Implementar datos de control para pruebas.
+- ¿Los datos sin score deberían afectar las gráficas de distribución de score?
+- Mejorar interfaces.
+- Al seleccionar una fila, mostrar comparacioń 1 a 1.
+- Verificar casos de id repetidos.- Matriz de interacción:
+    * Ordenar por score en vez de número de vecinos.
+    * Agregar notación de color y quitar los números.
+    * Cambiar escala de visualización, usar escala logarítmica.
+- Graficar coeficiente de variación.
+- Comparar score de dominios con colores.
+- Implementar datos de control para pruebas.
+- ¿Los datos sin score deberían afectar las gráficas de distribución de score?
+- Mejorar interfaces.
+- Al seleccionar una fila, mostrar comparacioń 1 a 1.
+- Verificar casos de id repetidos.
