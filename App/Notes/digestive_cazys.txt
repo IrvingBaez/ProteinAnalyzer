@@ -1,3 +1,4 @@
+type, ID, HMMR
 digestive_system, WP_004300809.1, GH29-CBM32-CBM32
 digestive_system, WP_004300998.1, GH32
 digestive_system, WP_004297713.1, PL9

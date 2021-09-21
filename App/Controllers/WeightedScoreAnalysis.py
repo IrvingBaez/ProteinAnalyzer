@@ -5,10 +5,10 @@ from App.Controllers.CrossMatrixConfig import CrossMatrixConfig
 
 
 class WeightedScoreAnalysis:
-    def __init__(self, data, id_col, sequence_col, separator):
+    def __init__(self, data, type_col, id_col, sequence_col, separator):
         # self.data = data[[id_col, sequence_col]]
-        self.model = Model.WeightedScoreAnalysis(data, id_col, sequence_col, separator)
-        self.result = self.model.weight_score_per_family()
+        self.model = Model.WeightedScoreAnalysis(data, type_col, id_col, sequence_col, separator)
+        self.result = self.model.weighted_score_per_family_type()["soil"]
         self.view = View.WeightedScoreAnalysis(self)
 
         self.crossMatrixConfig = None

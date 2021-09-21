@@ -16,29 +16,41 @@ def coefficient_variation(data):
 
 
 class WeightedScoreAnalysis:
-    def __init__(self, data, id_col, sequence_col, separator):
-        self.data = data[[id_col, sequence_col]]
+    def __init__(self, data, type_col, id_col, sequence_col, separator):
+        self.data = data[[type_col, id_col, sequence_col]]
+        self.type_col = type_col
         self.id_col = id_col
         self.sequence_col = sequence_col
         self.separator = separator
-        self.total_proteins = None
+        self.total_proteins = {}
         self.neighbours = {}
         self.result = None
 
-    def weight_score_per_family(self):
+        self.data[type_col] = self.data[type_col].str.strip()
+        self.data[id_col] = self.data[id_col].str.strip()
+        self.data[sequence_col] = self.data[sequence_col].str.strip()
+
+    def weighted_score_per_family_type(self):
+        self.__load_proteins(self.data)
+        result = {}
+
+        for family_type in self.total_proteins.keys():
+            result[family_type] = self.__weight_score_per_family(family_type)
+
+        return result
+
+    def __weight_score_per_family(self, family_type):
         """
         Finds the weighted score for every family available in the data provided.
 
         :return: pandas dataframe with domain and weighted score as columns.
         """
-        self.__load_proteins(self.data)
-
         data = {'Dominio': [], 'Puntuación': [], 'Vecinos': []}
-        for family in self.__find_families():
+        for family in self.__find_families(family_type):
             data['Dominio'] += [family]
-            data['Puntuación'] += [self.__weighted_score(family)]
+            data['Puntuación'] += [self.__weighted_score(family_type, family)]
 
-            neighbours = self.neighbours.get(family)
+            neighbours = self.neighbours[family_type].get(family)
             if neighbours is not None:
                 data['Vecinos'] += [', '.join([f'{key} ({value})' for key, value in neighbours.items()])]
             else:
@@ -68,10 +80,13 @@ class WeightedScoreAnalysis:
         :return: None.
         """
         data[self.sequence_col] = data[self.sequence_col].str.replace(r'\([^()]*\)', '', regex=True)
-        self.total_proteins = {key: [domain for domain in value.split(self.separator)]
-                               for key, value in data.set_index(self.id_col).T.to_dict('records')[0].items()}
 
-    def __weighted_score(self, domain):
+        for family_type in data[self.type_col].unique():
+            sub_data = data[data[self.type_col] == family_type]
+            self.total_proteins[family_type] = {key: [domain for domain in value.split(self.separator)]
+                                                for key, value in sub_data.set_index(self.id_col).T.to_dict('records')[1].items()}
+
+    def __weighted_score(self, family_type, domain):
         """
         Weighted score is defined as IAV(d) * IV(d) where:
             d is a domain
@@ -81,9 +96,9 @@ class WeightedScoreAnalysis:
         :param domain: string, domain d.
         :return: positive number or nan if domain never has any neighbours.
         """
-        return self.__inverse_abundance_frequency(domain) * self.__inverse_variability(domain)
+        return self.__inverse_abundance_frequency(family_type, domain) * self.__inverse_variability(family_type, domain)
 
-    def __inverse_abundance_frequency(self, domain):
+    def __inverse_abundance_frequency(self, family_type, domain):
         """
         Defined as log(pt/pd) where pt is the number of total proteins and pd is the number of proteins containing
         domain d.
@@ -91,20 +106,20 @@ class WeightedScoreAnalysis:
         :param domain: string, domain d.
         :return: number equal or greater than 1.
         """
-        domain_proteins = [protein for protein in self.total_proteins.values() if domain in protein]
-        return math.log(len(self.total_proteins) / len(domain_proteins), 10)
+        domain_proteins = [protein for protein in self.total_proteins[family_type].values() if domain in protein]
+        return math.log(len(self.total_proteins[family_type]) / len(domain_proteins), 10)
 
-    def __inverse_variability(self, domain):
+    def __inverse_variability(self, family_type, domain):
         """
         Is defined as 1 / the number of different domain families adjacent to a domain.
 
         :param domain: string, domain to process.
         :return: a number between 1 and 0 or nan if the domain never has any neighbours.
         """
-        distinct_neigbours = len(self.__distinct_neighbours(domain))
+        distinct_neigbours = len(self.__distinct_neighbours(family_type, domain))
         return 1 / distinct_neigbours if 0 < distinct_neigbours else numpy.nan
 
-    def __distinct_neighbours(self, domain):
+    def __distinct_neighbours(self, family_type, domain):
         """
         Finds all naighbours of domain d without repetition.
 
@@ -112,27 +127,29 @@ class WeightedScoreAnalysis:
         :return: list of neighbours.
         """
         neighbours = []
-        for protein in [protein for protein in self.total_proteins.values() if domain in protein]:
+        for protein in [protein for protein in self.total_proteins[family_type].values() if domain in protein]:
             neighbour_indexes = [[index - 1, index + 1] for index, value in enumerate(protein) if value == domain]
             neighbours += [protein[i] for i in sum(neighbour_indexes, []) if i in range(0, len(protein))]
 
-        self.__register_neighbours(domain, neighbours)
+        self.__register_neighbours(family_type, domain, neighbours)
         return list(set(neighbours))
 
-    def __register_neighbours(self, domain, neighbours):
+    def __register_neighbours(self, family_type, domain, neighbours):
+        self.neighbours[family_type] = {}
+
         if len(neighbours) > 0:
-            self.neighbours[domain] = {}
+            self.neighbours[family_type][domain] = {}
 
         for neighbour in neighbours:
-            if neighbour not in self.neighbours[domain]:
-                self.neighbours[domain][neighbour] = 1
+            if neighbour not in self.neighbours[family_type][domain]:
+                self.neighbours[family_type][domain][neighbour] = 1
             else:
-                self.neighbours[domain][neighbour] += 1
+                self.neighbours[family_type][domain][neighbour] += 1
 
-    def __find_families(self):
+    def __find_families(self, family_type):
         """
         Finds all distinct families in self.total_proteins.
 
         :return: set of families.
         """
-        return set(sum(self.total_proteins.values(), []))
+        return set(sum(self.total_proteins[family_type].values(), []))

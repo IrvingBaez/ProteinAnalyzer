@@ -1,6 +1,6 @@
 
 - Recuperación de funcionalidad:
-    * Permitir análisis de múltiples tipos.
+    * Reparar despliegue de matriz de interacción
 - Matriz de interacción:
     * Ordenar por score en vez de número de vecinos.
     * Agregar notación de color y quitar los números.

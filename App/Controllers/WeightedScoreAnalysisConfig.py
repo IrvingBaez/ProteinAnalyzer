@@ -8,5 +8,5 @@ class WeightedScoreAnalysisConfig:
         self.analyzer = None
         self.view = View.WeightedScoreAnalysisConfig(self)
 
-    def perform_analysis(self, id_col, sequence_col, separator):
-        self.analyzer = WeightedScoreAnalysis(self.data, id_col, sequence_col, separator)
+    def perform_analysis(self, type_col, id_col, sequence_col, separator):
+        self.analyzer = WeightedScoreAnalysis(self.data, type_col, id_col, sequence_col, separator)
