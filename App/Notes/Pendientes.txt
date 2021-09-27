@@ -1,24 +1,33 @@
+Terminados:
+    - Recuperación de funcionalidad:
+        * Recuperar listas de Cazys.
+        * Permitir análisis de múltiples tipos de familias.
+        * Desplegar los múltiples tipos en tabs.
+        * Los botones de sorting solo deben renderizarse una vez y cambiar el contenido del treeview.
 
-- Recuperación de funcionalidad:
-    * Reparar despliegue de matriz de interacción
-- Matriz de interacción:
-    * Ordenar por score en vez de número de vecinos.
-    * Agregar notación de color y quitar los números.
-    * Cambiar escala de visualización, usar escala logarítmica.
-- Graficar coeficiente de variación.
-- Comparar score de dominios con colores.
-- Implementar datos de control para pruebas.
-- ¿Los datos sin score deberían afectar las gráficas de distribución de score?
-- Mejorar interfaces.
-- Al seleccionar una fila, mostrar comparacioń 1 a 1.
-- Verificar casos de id repetidos.- Matriz de interacción:
-    * Ordenar por score en vez de número de vecinos.
-    * Agregar notación de color y quitar los números.
-    * Cambiar escala de visualización, usar escala logarítmica.
-- Graficar coeficiente de variación.
-- Comparar score de dominios con colores.
-- Implementar datos de control para pruebas.
-- ¿Los datos sin score deberían afectar las gráficas de distribución de score?
-- Mejorar interfaces.
-- Al seleccionar una fila, mostrar comparacioń 1 a 1.
-- Verificar casos de id repetidos.
+Pendientes:
+    - Recuperación de funcionalidad:
+        * Reparar despliegue de matriz de interacción.
+        * Reparar despliegue de gráfica de valores.
+    - Matriz de interacción:
+        * Ordenar por score en vez de número de vecinos.
+        * Agregar notación de color y quitar los números.
+        * Cambiar escala de visualización, usar escala logarítmica.
+    - Graficar coeficiente de variación.
+    - Comparar score de dominios con colores.
+    - Implementar datos de control para pruebas.
+    - ¿Los datos sin score deberían afectar las gráficas de distribución de score?
+    - Mejorar interfaces.
+    - Al seleccionar una fila, mostrar comparacioń 1 a 1.
+    - Verificar casos de id repetidos.- Matriz de interacción:
+        * Ordenar por score en vez de número de vecinos.
+        * Agregar notación de color y quitar los números.
+        * Cambiar escala de visualización, usar escala logarítmica.
+    - Graficar coeficiente de variación.
+    - Comparar score de dominios con colores.
+    - Implementar datos de control para pruebas.
+    - ¿Los datos sin score deberían afectar las gráficas de distribución de score?
+    - Mejorar interfaces.
+        * Cerrar cuadro de configuración cuando se muestre el resultado.
+    - Al seleccionar una fila, mostrar comparacioń 1 a 1.
+    - Verificar casos de id repetidos.

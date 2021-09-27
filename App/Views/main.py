@@ -40,7 +40,7 @@ class MainView:
 
     def load_command(self):
         file_path = filedialog.askopenfilename(title="Seleccione un archivo", filetypes=(
-            ("Archivos csv", "*.csv"), ("Archivos txt", "*.txt")
+            ("Archivos csv", "*.csv *.txt")
         ))
         self.controller.load_data(file_path)
 
